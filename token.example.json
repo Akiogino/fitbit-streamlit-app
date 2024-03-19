@@ -1,0 +1,8 @@
+{
+    "access_token": "XXXXXXXXXXXXXXXXXXXXXXXXX",
+    "expires_in": 28800,
+    "refresh_token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "scope": "respiratory_rate electrocardiogram location cardio_fitness social activity settings sleep temperature oxygen_saturation nutrition heartrate profile weight",
+    "token_type": "Bearer",
+    "user_id": "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+}
