@@ -24,6 +24,7 @@ Fitbit Python Analyzerは、Fitbitデバイスから収集された睡眠デー�
    - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/108kwWcFWCppYo_35__JKvbosGiw6mv4D?usp=sharing)
    - Fitbitの睡眠データをグラフ化する方法を解説
    - プログラミングの知識がなくても、サンプルコードを実行するだけで簡単に可視化が可能
+   - ![](docs\demo1.png)
 
 2. [Fitbit_Demo[Heart_visual]_requests.ipynb](notebook/Fitbit_Demo[Heart_visual]_requests.ipynb)
    - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1UTlDbkUXhlw5wrwqovzEC-h7X9xZkQPw?usp=sharing)
