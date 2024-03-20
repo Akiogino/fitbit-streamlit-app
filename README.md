@@ -22,17 +22,20 @@ Fitbit Python Analyzerは、Fitbitデバイスから収集された睡眠デー�
 
 1. [Fitbit_Demo[Sleep_visual]_python_fitbit.ipynb](notebook/Fitbit_Demo[Sleep_visual]_python_fitbit.ipynb)
    - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/108kwWcFWCppYo_35__JKvbosGiw6mv4D?usp=sharing)
+   - [![](https://img.shields.io/static/v1?label=Blog&message=PythonとGoogleColabを使ってFitbitの睡眠データを可視化しよう&color=green)](https://hamaruki.com/visualize-fitbit-sleep-data-using-python-and-google-colab/)
    - Fitbitの睡眠データをグラフ化する方法を解説
    - プログラミングの知識がなくても、サンプルコードを実行するだけで簡単に可視化が可能
    - ![](https://raw.githubusercontent.com/Sunwood-ai-labs/fitbit-python-analyzer/main/docs/demo1.png)
 
 2. [Fitbit_Demo[Heart_visual]_requests.ipynb](notebook/Fitbit_Demo[Heart_visual]_requests.ipynb)
    - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1UTlDbkUXhlw5wrwqovzEC-h7X9xZkQPw?usp=sharing)
+   - [![](https://img.shields.io/static/v1?label=Blog&message=Fitbitで心拍数データを時系列で取得・可視化する方法&color=green)](https://hamaruki.com/how-to-acquire-and-visualize-heart-rate-data-in-time-series-with-fitbit/)
    - Fitbit APIを使用して心拍数データを取得し、時系列グラフで可視化する方法を初心者向けに解説
    - ![](https://raw.githubusercontent.com/Sunwood-ai-labs/fitbit-python-analyzer/main/docs/demo2.png)
 
 3. [Fitbit_Demo[Heart_visual_Range]_requests.ipynb](notebook/Fitbit_Demo[Heart_visual_Range]_requests.ipynb)
    - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12f3y4K5VFbpACMwxUM0k-c2q7QS7-VWi?usp=sharing)
+   - [![](https://img.shields.io/static/v1?label=Blog&message=Fitbitの期間を指定してデータを取得/可視化する&color=green)](https://hamaruki.com/acquire-visualize-data-by-specifying-fitbit-period/)
    - 指定した期間のFitbit心拍数データを取得し、SeabornとMatplotlibを使ってグラフで可視化する方法を解説
    - ![](https://raw.githubusercontent.com/Sunwood-ai-labs/fitbit-python-analyzer/main/docs/demo3.png)
 ## 使い方
