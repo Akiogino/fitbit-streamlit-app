@@ -8,8 +8,6 @@ fitbit-python-analyzer <br>
 Fitbit Python Analyzerは、Fitbitデバイスから収集された睡眠データと心拍数データを分析・可視化するためのPythonプロジェクトです。このプロジェクトは、自分の健康状態をより深く理解し、生活習慣の改善に役立てることを目的としています。
 
 
-
-
 ## 特徴
 
 - Fitbit APIを使用して、睡眠データと心拍数データを取得
@@ -22,15 +20,17 @@ Fitbit Python Analyzerは、Fitbitデバイスから収集された睡眠デー�
 
 このリポジトリには、以下の3つのJupyter Notebookが含まれています。
 
-1. [Fitbit_Demo[Sleep_visual]_python_fitbit.ipynb](notebook/Fitbit_Demo[Sleep_visual]_python_fitbit.ipynb)[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/googlecolab/colabtools/blob/master/notebooks/colab-github-demo.ipynb)
-
+1. [Fitbit_Demo[Sleep_visual]_python_fitbit.ipynb](notebook/Fitbit_Demo[Sleep_visual]_python_fitbit.ipynb)
+   - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/108kwWcFWCppYo_35__JKvbosGiw6mv4D?usp=sharing)
    - Fitbitの睡眠データをグラフ化する方法を解説
    - プログラミングの知識がなくても、サンプルコードを実行するだけで簡単に可視化が可能
 
 2. [Fitbit_Demo[Heart_visual]_requests.ipynb](notebook/Fitbit_Demo[Heart_visual]_requests.ipynb)
+   - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1UTlDbkUXhlw5wrwqovzEC-h7X9xZkQPw?usp=sharing)
    - Fitbit APIを使用して心拍数データを取得し、時系列グラフで可視化する方法を初心者向けに解説
 
 3. [Fitbit_Demo[Heart_visual_Range]_requests.ipynb](notebook/Fitbit_Demo[Heart_visual_Range]_requests.ipynb)
+   - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/12f3y4K5VFbpACMwxUM0k-c2q7QS7-VWi?usp=sharing)
    - 指定した期間のFitbit心拍数データを取得し、SeabornとMatplotlibを使ってグラフで可視化する方法を解説
 
 ## 使い方
