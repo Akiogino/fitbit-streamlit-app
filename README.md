@@ -1,6 +1,6 @@
 
 <h1>
-<img src="https://raw.githubusercontent.com/Sunwood-ai-labs/fitbit-python-analyzer/main/docs/icon.png" height=200px align="right"/>
+<img src="https://raw.githubusercontent.com/Sunwood-ai-labs/fitbit-di-python-analyzer/main/docs/fitbit-di.png" height=200px align="right"/>
 Fitbit DI <br>
 </h1>
 
