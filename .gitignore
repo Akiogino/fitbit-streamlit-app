@@ -161,3 +161,4 @@ cython_debug/
 token.json
 fitbit-token.json
 makidemodrive-8f2f32d3daec.json
+config/config2.yaml
