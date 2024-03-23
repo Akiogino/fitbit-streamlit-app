@@ -58,3 +58,27 @@ Fitbit Python Analyzerは、Fitbitデバイスから収集された睡眠デー�
 ## ライセンス
 
 このプロジェクトはMITライセンスの下で公開されています。詳細については、[LICENSE](LICENSE)ファイルを参照してください。
+
+---
+
+
+
+python -m venv venv
+
+source venv/bin/activate
+source venv/bin/activate
+source /mnt/c/Prj/DataInterpreter-API-/venv/bin/activate
+
+python -m pip install --upgrade pip
+pip install --upgrade metagpt
+
+pip install matplotlib
+pip install seaborn
+pip install fastapi uvicorn
+
+
+---
+
+python api/di-visualization_api.py
+
+
