@@ -1,0 +1,98 @@
+{
+  "activities": [
+    {
+      "logId": 5206779421179228840,
+      "activityId": 1071,
+      "activityParentId": 1071,
+      "activityParentName": "Outdoor Bike",
+      "name": "Outdoor Bike",
+      "description": "",
+      "calories": 308,
+      "distance": 0.0,
+      "duration": 3482000,
+      "lastModified": "2025-03-29T01:39:22.744Z",
+      "startTime": "08:19",
+      "isFavorite": false,
+      "hasActiveZoneMinutes": true,
+      "startDate": "2025-03-23",
+      "hasStartTime": true
+    },
+    {
+      "logId": 2447131393604962376,
+      "activityId": 1071,
+      "activityParentId": 1071,
+      "activityParentName": "Outdoor Bike",
+      "name": "Outdoor Bike",
+      "description": "",
+      "calories": 174,
+      "distance": 1.519815,
+      "duration": 1844000,
+      "lastModified": "2025-03-29T01:39:24.581Z",
+      "startTime": "20:48",
+      "isFavorite": false,
+      "hasActiveZoneMinutes": true,
+      "startDate": "2025-03-23",
+      "hasStartTime": true
+    }
+  ],
+  "summary": {
+    "caloriesOut": 2796,
+    "activityCalories": 1548,
+    "caloriesBMR": 1590,
+    "activeScore": -1,
+    "steps": 14413,
+    "floors": 18,
+    "elevation": 54.864,
+    "sedentaryMinutes": 1109,
+    "lightlyActiveMinutes": 248,
+    "fairlyActiveMinutes": 50,
+    "veryActiveMinutes": 33,
+    "distances": [
+      {
+        "activity": "total",
+        "distance": 6.332213
+      },
+      {
+        "activity": "tracker",
+        "distance": 0.0374
+      },
+      {
+        "activity": "sedentaryActive",
+        "distance": 0.0
+      },
+      {
+        "activity": "lightlyActive",
+        "distance": 1.780163
+      },
+      {
+        "activity": "moderatelyActive",
+        "distance": 2.635688
+      },
+      {
+        "activity": "veryActive",
+        "distance": 1.916362
+      },
+      {
+        "activity": "loggedActivities",
+        "distance": 1.519815
+      },
+      {
+        "activity": "Outdoor Bike",
+        "distance": 0.0
+      },
+      {
+        "activity": "Outdoor Bike",
+        "distance": 1.519815
+      }
+    ],
+    "marginalCalories": 1039,
+    "heartRateZones": []
+  },
+  "goals": {
+    "caloriesOut": 2704,
+    "steps": 10000,
+    "distance": 8.05,
+    "floors": 10,
+    "activeMinutes": 30
+  }
+}

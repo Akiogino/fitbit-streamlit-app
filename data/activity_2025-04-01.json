@@ -1,0 +1,108 @@
+{
+  "activities": [
+    {
+      "logId": 568473086333283648,
+      "activityId": 90013,
+      "activityParentId": 90013,
+      "activityParentName": "Walk",
+      "name": "Walk",
+      "description": "Walking less than 2 mph, strolling very slowly",
+      "calories": 225,
+      "distance": 2.2723,
+      "steps": 3292,
+      "duration": 2663000,
+      "lastModified": "2025-04-02T02:42:16.857Z",
+      "startTime": "08:08",
+      "isFavorite": false,
+      "hasActiveZoneMinutes": true,
+      "startDate": "2025-04-01",
+      "hasStartTime": true
+    }
+  ],
+  "summary": {
+    "caloriesOut": 2616,
+    "activityCalories": 1348,
+    "caloriesBMR": 1590,
+    "activeScore": -1,
+    "steps": 11090,
+    "floors": 13,
+    "elevation": 39.624,
+    "sedentaryMinutes": 1140,
+    "lightlyActiveMinutes": 256,
+    "fairlyActiveMinutes": 27,
+    "veryActiveMinutes": 17,
+    "distances": [
+      {
+        "activity": "total",
+        "distance": 7.6258
+      },
+      {
+        "activity": "tracker",
+        "distance": 7.6258
+      },
+      {
+        "activity": "sedentaryActive",
+        "distance": 0.0
+      },
+      {
+        "activity": "lightlyActive",
+        "distance": 2.9221
+      },
+      {
+        "activity": "moderatelyActive",
+        "distance": 2.3559
+      },
+      {
+        "activity": "veryActive",
+        "distance": 2.3478
+      },
+      {
+        "activity": "loggedActivities",
+        "distance": 2.2723
+      },
+      {
+        "activity": "Walk",
+        "distance": 2.2723
+      }
+    ],
+    "marginalCalories": 867,
+    "restingHeartRate": 80,
+    "heartRateZones": [
+      {
+        "minutes": 1379,
+        "caloriesOut": 2343.3958859999993,
+        "name": "Out of Range",
+        "min": 30,
+        "max": 125
+      },
+      {
+        "minutes": 61,
+        "caloriesOut": 272.243244,
+        "name": "Fat Burn",
+        "min": 126,
+        "max": 148
+      },
+      {
+        "minutes": 0,
+        "caloriesOut": 0.0,
+        "name": "Cardio",
+        "min": 149,
+        "max": 176
+      },
+      {
+        "minutes": 0,
+        "caloriesOut": 0.0,
+        "name": "Peak",
+        "min": 177,
+        "max": 220
+      }
+    ]
+  },
+  "goals": {
+    "caloriesOut": 2704,
+    "steps": 10000,
+    "distance": 8.05,
+    "floors": 10,
+    "activeMinutes": 30
+  }
+}
