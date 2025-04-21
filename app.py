@@ -57,12 +57,12 @@ else:
             data_dir = temp_dir
     else:
         st.sidebar.warning("ZIPファイルをアップロードしてください")
-        # デモデータを使用するオプション
-        use_demo_data = st.sidebar.checkbox("デモデータを使用", value=True)
+        # 実データを使用するオプション
+        use_demo_data = st.sidebar.checkbox("実データを使用", value=True)
         if use_demo_data:
-            data_dir = "data"  # デモデータディレクトリ
+            data_dir = "data"  # 実データディレクトリ
         else:
-            st.warning("データがアップロードされていません。ZIPファイルをアップロードするか、デモデータを使用してください。")
+            st.warning("データがアップロードされていません。ZIPファイルをアップロードするか、実データを使用してください。")
             st.stop()
 
 # 表示設定
@@ -483,7 +483,7 @@ with tab4:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center;">
-    <p>このアプリはFitbitデータを可視化するためのオープンソースツールです。</p>
+    <p>このアプリはFitbitデータを可視化するための研究用ツールです。</p>
     <p><a href="https://github.com/yourusername/fitbit-di-python-analyzer" target="_blank">GitHub</a>でソースコードを確認できます。</p>
 </div>
 """, unsafe_allow_html=True)
