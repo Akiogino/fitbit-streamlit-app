@@ -167,3 +167,17 @@ data/
 Datasets/fitbit_data.csv
 /logs
 /metagpt
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Add data folder exceptions
+data/*
+!data/.gitkeep
+
+# Add output folder exceptions
+output/*
+!output/.gitkeep
+!output/visualization/
+output/visualization/*
+!output/visualization/.gitkeep
