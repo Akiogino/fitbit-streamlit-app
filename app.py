@@ -17,6 +17,7 @@ import streamlit as st
 from datetime import datetime
 import zipfile
 import io
+import numpy as np
 
 # ページ設定
 st.set_page_config(
@@ -36,12 +37,15 @@ st.sidebar.header("設定")
 # データソース選択
 data_source = st.sidebar.radio(
     "データソース",
-    ["ローカルフォルダ", "ZIPファイルをアップロード"],
+    ["デモデータ", "ローカルフォルダ", "ZIPファイルをアップロード"],
     index=0
 )
 
-# データディレクトリ設定（ローカルフォルダの場合）
-if data_source == "ローカルフォルダ":
+# データディレクトリ設定
+if data_source == "デモデータ":
+    data_dir = "sample_data"
+    st.sidebar.info("デモデータを使用しています。実際のFitbitデータをアップロードすることもできます。")
+elif data_source == "ローカルフォルダ":
     data_dir = st.sidebar.text_input("データディレクトリ", value="data")
 else:
     # ZIPファイルのアップロード
@@ -60,7 +64,7 @@ else:
         # デモデータを使用するオプション
         use_demo_data = st.sidebar.checkbox("デモデータを使用", value=True)
         if use_demo_data:
-            data_dir = "data"  # デモデータディレクトリ
+            data_dir = "sample_data"  # デモデータディレクトリ
         else:
             st.warning("データがアップロードされていません。ZIPファイルをアップロードするか、デモデータを使用してください。")
             st.stop()
@@ -266,7 +270,7 @@ with col3:
         st.metric("平均安静時心拍数", "データなし", delta=None)
 
 # タブでコンテンツを整理
-tab1, tab2, tab3, tab4 = st.tabs(["歩数", "睡眠", "心拍数", "相関分析"])
+tab1, tab2, tab3 = st.tabs(["歩数", "睡眠", "心拍数"])
 
 # タブ1: 歩数データ
 with tab1:
@@ -422,62 +426,6 @@ with tab3:
             st.metric("期間中の変化", f"{abs(hr_trend)} bpm", delta=f"{hr_trend} bpm", delta_color=delta_color)
     else:
         st.info("心拍数データがありません")
-
-# タブ4: 相関分析
-with tab4:
-    st.subheader("データ間の相関分析")
-    
-    # 睡眠時間と次の日の歩数の相関
-    if not sleep_df.empty and not activity_df.empty:
-        # データフレームをマージ
-        sleep_df['next_day'] = sleep_df['date'] + pd.Timedelta(days=1)
-        merged_df = pd.merge(
-            sleep_df, 
-            activity_df,
-            left_on='next_day',
-            right_on='date',
-            suffixes=('_sleep', '_steps')
-        )
-        
-        if not merged_df.empty:
-            st.write("#### 睡眠時間と翌日の歩数の関係")
-            fig_corr = px.scatter(
-                merged_df, 
-                x='sleep_hours', 
-                y='steps',
-                title='睡眠時間と翌日の歩数の関係',
-                labels={
-                    'sleep_hours': '睡眠時間 (時間)', 
-                    'steps': '翌日の歩数'
-                },
-                trendline='ols',
-                trendline_color_override='red'
-            )
-            
-            fig_corr.update_layout(
-                xaxis_title='睡眠時間 (時間)',
-                yaxis_title='翌日の歩数',
-                xaxis={'rangemode': 'tozero'},
-                yaxis={'rangemode': 'tozero'}
-            )
-            
-            st.plotly_chart(fig_corr, use_container_width=True)
-            
-            # 相関係数を計算
-            correlation = merged_df['sleep_hours'].corr(merged_df['steps'])
-            st.write(f"**相関係数**: {correlation:.2f}")
-            
-            # 相関係数の解釈
-            if abs(correlation) < 0.3:
-                st.write("**解釈**: 睡眠時間と翌日の歩数の間には弱い相関関係があります。")
-            elif abs(correlation) < 0.7:
-                st.write("**解釈**: 睡眠時間と翌日の歩数の間には中程度の相関関係があります。")
-            else:
-                st.write("**解釈**: 睡眠時間と翌日の歩数の間には強い相関関係があります。")
-        else:
-            st.info("睡眠と歩数の相関分析に必要なデータが不足しています")
-    else:
-        st.info("相関分析に必要なデータがありません")
 
 # フッター
 st.markdown("---")
