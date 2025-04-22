@@ -457,6 +457,16 @@ class FitbitVisualizer:
             """)
             
             # 睡眠ステージの遷移回数
-            transitions = sleep_stages_df['sleep_stage_jp'].diff().ne(0).sum() - 1
-            if transitions > 0:
-                st.markdown(f"- **睡眠ステージの遷移**: この時間帯で{transitions}回の睡眠ステージの変化が観測されました。") 
+            if len(sleep_stages_df) > 1:
+                # シフトして前の値と比較し、変化があった箇所をカウント
+                transitions = (sleep_stages_df['sleep_stage_jp'] != sleep_stages_df['sleep_stage_jp'].shift()).sum() - 1
+                # NaNとの比較はFalseになるため、最初の行は常にカウントされない
+                # そのため、実際の遷移回数は「異なる数 - 1」となる
+                
+                # 負の値にならないよう調整
+                transitions = max(0, transitions)
+                
+                if transitions > 0:
+                    st.markdown(f"- **睡眠ステージの遷移**: この時間帯で{transitions}回の睡眠ステージの変化が観測されました。")
+            elif len(sleep_stages_df) == 1:
+                st.markdown("- **睡眠ステージの遷移**: この時間帯では睡眠ステージの変化は観測されませんでした。") 
