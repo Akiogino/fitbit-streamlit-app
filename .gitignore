@@ -42,3 +42,4 @@ Thumbs.db
 
 # アプリケーション固有
 .streamlit/ 
+.env 
