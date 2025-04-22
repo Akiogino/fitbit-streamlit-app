@@ -449,8 +449,8 @@ class FitbitVisualizer:
             )
             
             # 主要な睡眠ステージを特定
-            main_stage = sleep_stages_df.groupby('sleep_stage_jp')['duration_seconds'].sum().idxmax()
-            main_stage_duration = sleep_stages_df.groupby('sleep_stage_jp')['duration_seconds'].sum().max() / 60
+            main_stage = sleep_stages_df.groupby('sleep_stage_jp', observed=True)['duration_seconds'].sum().idxmax()
+            main_stage_duration = sleep_stages_df.groupby('sleep_stage_jp', observed=True)['duration_seconds'].sum().max() / 60
             
             st.markdown(f"""
             - **睡眠の特徴**: この時間帯では主に「{main_stage}」状態でした（約{round(main_stage_duration, 1)}分間）。
