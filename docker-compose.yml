@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  fitbit-di:
+    build: .
+    platform: linux/arm64
+    container_name: fitbit-di
+    working_dir: /app/notebook
+    volumes:
+      - .:/app
+      - ./Datasets:/app/Datasets
+      - ./output:/app/output
+      - ./notebook:/app/notebook
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    command: quarto preview Fitbit_Demo_Sleep_visual.qmd --port 8000 --host 0.0.0.0

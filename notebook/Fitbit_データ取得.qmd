@@ -1,0 +1,221 @@
+---
+title: "Fitbit Sleep Data Analysis"
+format:
+  html:
+    code-fold: true
+    theme: cosmo
+    toc: true
+execute:
+  warning: false
+---
+このノートブックの目的
+アクセストークンを取得する
+
+
+```{python}
+#| label: setup
+#| include: false
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+from datetime import datetime, timedelta
+import json
+import requests
+from fitbit import Fitbit
+import os
+from dotenv import load_dotenv
+```
+
+## Fitbit APIの認証設定
+
+```{python}
+#| label: auth-setup
+
+# .envファイルから環境変数を読み込む
+load_dotenv()
+
+# 環境変数から認証情報を取得
+CLIENT_ID = os.getenv('FITBIT_CLIENT_ID')
+CLIENT_SECRET = os.getenv('FITBIT_CLIENT_SECRET')
+ACCESS_TOKEN = os.getenv('FITBIT_ACCESS_TOKEN')
+REFRESH_TOKEN = os.getenv('FITBIT_REFRESH_TOKEN')
+
+# 認証情報が設定されているか確認
+if not CLIENT_ID or not CLIENT_SECRET:
+    print("環境変数にFITBIT_CLIENT_IDとFITBIT_CLIENT_SECRETを設定してください")
+    print("Fitbit開発者ポータル(https://dev.fitbit.com/apps)でアプリケーションを登録してください")
+
+# トークンが既にある場合はそれを使用、なければ新規に取得
+if ACCESS_TOKEN and REFRESH_TOKEN:
+    print("既存のトークンを使用します")
+    authd_client = Fitbit(
+        CLIENT_ID,
+        CLIENT_SECRET,
+        oauth2=True,
+        access_token=ACCESS_TOKEN,
+        refresh_token=REFRESH_TOKEN
+    )
+else:
+    print("認証フローを開始します。ブラウザでFitbitの認証ページが開きます。")
+    authd_client = Fitbit(
+        CLIENT_ID,
+        CLIENT_SECRET,
+        oauth2=True,
+        redirect_uri='http://localhost:8080/'
+    )
+    print(f"以下のURLをブラウザで開いて認証してください: {authd_client.client.authorize_token_url()}")
+    # ここでブラウザが開いて認証を行い、リダイレクトされたURLからトークンを取得する処理が必要
+    # ブラウザでリダイレクトされたURLからコードを取得
+    auth_code = input("リダイレクトされたURLからcodeパラメータの値を入力してください: ")
+    # トークンを取得
+    authd_client.client.fetch_access_token(auth_code)
+    
+    # トークンを表示（本番環境では安全な方法で保存すべき）
+    print("アクセストークン:", authd_client.client.session.token['access_token'])
+    print("リフレッシュトークン:", authd_client.client.session.token['refresh_token'])
+```
+
+## Fitbitからデータを収集
+
+```{python}
+#| label: fetch-data
+
+# データ収集の日付範囲を設定
+today = datetime.now().strftime('%Y-%m-%d')
+yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+last_month = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+
+# 睡眠データを取得
+try:
+    sleep_data = authd_client.get_sleep(today)
+    print("本日の睡眠データ:")
+    print(json.dumps(sleep_data, indent=2))
+except Exception as e:
+    print(f"睡眠データの取得に失敗しました: {e}")
+
+# 過去30日間の睡眠データを取得
+try:
+    sleep_range = authd_client.time_series('sleep/timeInBed', base_date=last_month, end_date=today)
+    print("\n過去30日間の睡眠データ:")
+    print(json.dumps(sleep_range, indent=2))
+except Exception as e:
+    print(f"睡眠時間シリーズの取得に失敗しました: {e}")
+
+# 心拍数データを取得
+try:
+    heart_data = authd_client.intraday_time_series('activities/heart', base_date=yesterday, detail_level='1min')
+    print("\n昨日の心拍数データ:")
+    print(json.dumps(heart_data, indent=2))
+except Exception as e:
+    print(f"心拍数データの取得に失敗しました: {e}")
+
+# 取得したデータをDataFrameに変換して保存
+if 'sleep_range' in locals():
+    sleep_df = pd.DataFrame(sleep_range['sleep-timeInBed'])
+    sleep_df.columns = ['date', 'sleep_hours']
+    sleep_df['sleep_hours'] = sleep_df['sleep_hours'].astype(float) / 60  # 分から時間に変換
+    sleep_df.to_csv('../Datasets/fitbit_data.csv', index=False)
+    print("\nデータを保存しました: ../Datasets/fitbit_data.csv")
+    
+    # グローバル変数としてdfを設定
+    df = sleep_df
+    print("\nデータの基本統計量:")
+    print(df.describe())
+    
+    print("\nデータの最初の5行:")
+    print(df.head())
+```
+
+## Introduction
+
+このドキュメントでは、Fitbitの睡眠データを分析します。以下の内容を実施します：
+
+1. Fitbitの睡眠データの読み込みと処理
+2. データの可視化
+3. 睡眠パターンの分析
+
+## データ分析
+
+```{python}
+#| label: load-data
+#| warning: false
+
+# サンプルデータの読み込み
+try:
+    df = pd.read_csv('../Datasets/fitbit_data.csv')
+    print("データの基本統計量:")
+    print(df.describe())
+    
+    print("\nデータの最初の5行:")
+    print(df.head())
+except FileNotFoundError:
+    print("データファイルが見つかりません。パスを確認してください。")
+```
+
+## 可視化
+
+### 睡眠時間の推移
+
+```{python}
+#| label: sleep-viz
+#| warning: false
+
+if 'df' in globals():
+    plt.figure(figsize=(12, 6))
+    sns.lineplot(data=df, x='date', y='sleep_hours')
+    plt.title('睡眠時間の推移')
+    plt.xlabel('日付')
+    plt.ylabel('睡眠時間 (時間)')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+```
+
+### 睡眠時間の分布
+
+```{python}
+#| label: sleep-dist
+#| warning: false
+
+if 'df' in globals():
+    plt.figure(figsize=(10, 6))
+    sns.histplot(data=df, x='sleep_hours', bins=20)
+    plt.title('睡眠時間の分布')
+    plt.xlabel('睡眠時間 (時間)')
+    plt.ylabel('頻度')
+    plt.tight_layout()
+    plt.show()
+```
+
+## インタラクティブな可視化
+
+```{python}
+#| label: plotly-viz
+#| warning: false
+
+if 'df' in globals():
+    fig = px.line(df, x='date', y='sleep_hours', 
+                  title='睡眠時間の推移（インタラクティブ）')
+    fig.update_layout(
+        xaxis_title='日付',
+        yaxis_title='睡眠時間 (時間)'
+    )
+    fig.show()
+```
+
+## 統計分析
+
+```{python}
+#| label: stats
+#| warning: false
+
+if 'df' in globals():
+    print("睡眠時間の統計概要:")
+    print("\n平均睡眠時間:", df['sleep_hours'].mean().round(2), "時間")
+    print("最長睡眠時間:", df['sleep_hours'].max().round(2), "時間")
+    print("最短睡眠時間:", df['sleep_hours'].min().round(2), "時間")
+    print("標準偏差:", df['sleep_hours'].std().round(2), "時間")
+``` 

@@ -30,6 +30,9 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 if openai_api_key:
     openai.api_key = openai_api_key
 
+# 分析パスワードの設定
+analysis_password = os.getenv("ANALYSIS_PASSWORD", "fitbit-analysis-demo")
+
 # ページ設定
 st.set_page_config(
     page_title="Fitbit データ分析ダッシュボード - 健康追跡の可視化",
@@ -784,6 +787,61 @@ with tab3:
 # タブ4: 時間帯分析
 with tab4:
     st.subheader("特定時間帯の詳細分析")
+    
+    # アクセス制限オプション
+    access_option = st.radio(
+        "分析モード選択",
+        ["基本分析（無料）", "AI詳細分析（認証必要）"],
+        horizontal=True
+    )
+    
+    if access_option == "AI詳細分析（認証必要）":
+        # アクセス制限の設定
+        with st.expander("詳細分析のアクセス認証", expanded=True):
+            # セッション状態の初期化
+            if 'authenticated' not in st.session_state:
+                st.session_state.authenticated = False
+            if 'api_usage_count' not in st.session_state:
+                st.session_state.api_usage_count = 0
+            if 'max_api_uses' not in st.session_state:
+                st.session_state.max_api_uses = 3  # 1セッションあたりの最大分析回数
+            
+            # 認証済みの場合は利用回数を表示
+            if st.session_state.authenticated:
+                st.success(f"✅ 認証済み - 残り利用回数: {st.session_state.max_api_uses - st.session_state.api_usage_count}回")
+            else:
+                # 認証フォーム
+                password = st.text_input("アクセスパスワードを入力", type="password")
+                correct_password = analysis_password  # .envから読み込むか、デフォルト値を使用
+                
+                if st.button("認証"):
+                    if password == correct_password:
+                        st.session_state.authenticated = True
+                        st.success("✅ 認証に成功しました！詳細分析機能が利用可能になりました。")
+                        st.rerun()  # 画面を更新
+                    else:
+                        st.error("❌ パスワードが正しくありません。管理者にお問い合わせください。")
+        
+        # 未認証の場合はここで処理を中断
+        if not st.session_state.authenticated:
+            st.warning("詳細分析を利用するには認証が必要です。上記のフォームからパスワードを入力してください。")
+            st.markdown("""
+            ### 基本分析について
+            
+            基本分析モードでは、グラフや数値データのみが表示されます。
+            より詳しいAI解析を利用するには、管理者からパスワードを取得してください。
+            """)
+            st.stop()  # ここで処理を中断
+        
+        # 利用回数の上限チェック
+        if st.session_state.api_usage_count >= st.session_state.max_api_uses:
+            st.warning(f"⚠️ APIの利用回数制限（{st.session_state.max_api_uses}回）に達しました。管理者にお問い合わせください。")
+            if st.button("利用制限をリセット（デモ用）"):
+                st.session_state.api_usage_count = 0
+                st.success("利用回数をリセットしました！")
+                st.rerun()
+            st.stop()
+    
     st.markdown("特定の時間帯のデータを詳しく分析します。")
     
     # 日付選択
@@ -830,6 +888,10 @@ with tab4:
         end_time_str = end_time.strftime("%H:%M")
         
         if st.button("分析開始"):
+            # APIアクセスを使用する場合は使用回数をカウント
+            if access_option == "AI詳細分析（認証必要）":
+                st.session_state.api_usage_count += 1
+            
             # 心拍数の詳細データ取得
             intraday_hr_df = load_intraday_heart_rate_data(
                 data_dir, 
@@ -1034,68 +1096,87 @@ with tab4:
                 if transitions > 0:
                     st.markdown(f"- **睡眠ステージの遷移**: この時間帯で{transitions}回の睡眠ステージの変化が観測されました。")
             
-            # 総合的な考察
+            # 総合的な考察 - AIモードのみで表示
             if not intraday_hr_df.empty or not sleep_stages_df.empty:
-                st.subheader("総合考察（AI分析）")
-                
-                # AIによる分析を行うかのトグル
-                use_ai_insights = st.checkbox("GPT-4.1-nanoによる詳細な分析を表示", value=True)
-                
-                if use_ai_insights:
-                    if not openai_api_key:
-                        st.warning("OpenAI APIキーが設定されていません。詳細な分析を行うには、.envファイルにOPENAI_API_KEYを設定してください。")
-                        st.markdown("""
-                        ### 設定方法:
-                        1. プロジェクトのルートディレクトリに `.env` ファイルを作成
-                        2. 以下の内容を追加:
-                        ```
-                        OPENAI_API_KEY=your_api_key_here
-                        ```
-                        3. アプリを再起動
-                        """)
-                    else:
-                        # 状態ごとに考察を取得するキャッシュ（毎回APIを呼ばないようにする）
-                        cache_key = f"{selected_date}_{start_time_str}_{end_time_str}"
-                        
-                        if "ai_insights" not in st.session_state:
-                            st.session_state.ai_insights = {}
-                        
-                        # キャッシュになければ新たに生成
-                        if cache_key not in st.session_state.ai_insights:
-                            with st.spinner("🤖 AIが健康データを分析中..."):
-                                time_range = f"{start_time_str}～{end_time_str}"
-                                insights = generate_ai_insights(
-                                    intraday_hr_df, 
-                                    sleep_stages_df, 
-                                    selected_date, 
-                                    time_range
-                                )
-                                st.session_state.ai_insights[cache_key] = insights
-                        
-                        # 結果を表示
-                        st.markdown(st.session_state.ai_insights[cache_key])
-                        
-                        # 分析の注意点
-                        with st.expander("💡 分析についての注意点"):
+                if access_option == "AI詳細分析（認証必要）":
+                    st.subheader("総合考察（AI分析）")
+                    
+                    # AIによる分析を行うかのトグル
+                    use_ai_insights = st.checkbox("GPT-4.1-nanoによる詳細な分析を表示", value=True)
+                    
+                    if use_ai_insights:
+                        if not openai_api_key:
+                            st.warning("OpenAI APIキーが設定されていません。詳細な分析を行うには、.envファイルにOPENAI_API_KEYを設定してください。")
                             st.markdown("""
-                            * このAI分析はGPT-4.1-nanoによって生成されています
-                            * 分析結果は参考情報であり、医療アドバイスではありません
-                            * より正確な健康アドバイスには、医療専門家にご相談ください
-                            * 表示されている時間帯は現在時刻の30分前から現在までの活動です
-                            * 健康データをリアルタイムで分析するため、同じ時間帯でも時刻によって結果が変わります
+                            ### 設定方法:
+                            1. プロジェクトのルートディレクトリに `.env` ファイルを作成
+                            2. 以下の内容を追加:
+                            ```
+                            OPENAI_API_KEY=your_api_key_here
+                            ```
+                            3. アプリを再起動
                             """)
+                        else:
+                            # 状態ごとに考察を取得するキャッシュ（毎回APIを呼ばないようにする）
+                            cache_key = f"{selected_date}_{start_time_str}_{end_time_str}"
+                            
+                            if "ai_insights" not in st.session_state:
+                                st.session_state.ai_insights = {}
+                            
+                            # キャッシュになければ新たに生成
+                            if cache_key not in st.session_state.ai_insights:
+                                with st.spinner("🤖 AIが健康データを分析中..."):
+                                    time_range = f"{start_time_str}～{end_time_str}"
+                                    insights = generate_ai_insights(
+                                        intraday_hr_df, 
+                                        sleep_stages_df, 
+                                        selected_date, 
+                                        time_range
+                                    )
+                                    st.session_state.ai_insights[cache_key] = insights
+                            
+                            # 結果を表示
+                            st.markdown(st.session_state.ai_insights[cache_key])
+                            
+                            # 残り利用回数
+                            remaining_uses = st.session_state.max_api_uses - st.session_state.api_usage_count
+                            st.info(f"📊 残りAI分析回数: {remaining_uses}回")
+                            
+                            # 分析の注意点
+                            with st.expander("💡 分析についての注意点"):
+                                st.markdown("""
+                                * このAI分析はGPT-4.1-nanoによって生成されています
+                                * 分析結果は参考情報であり、医療アドバイスではありません
+                                * より正確な健康アドバイスには、医療専門家にご相談ください
+                                * 表示されている時間帯は現在時刻の30分前から現在までの活動です
+                                * 健康データをリアルタイムで分析するため、同じ時間帯でも時刻によって結果が変わります
+                                """)
+                    else:
+                        # AI分析を使用しない場合は簡易的な考察を表示
+                        st.markdown(f"""
+                        ### 現在の時間帯データの意義
+                        
+                        選択されている時間帯のデータは、あなたの直近の健康状態を把握するのに役立ちます。
+                        デフォルトでは、現在時刻の30分前から現在までのデータを分析します。
+                        
+                        この時間帯のデータを定期的に確認することで、日々の活動パターンや体調の変化をリアルタイムで把握できます。
+                        特に、運動後や食事後、睡眠前後などの特定のタイミングで確認すると、より意味のある洞察が得られます。
+                        
+                        詳細なAI分析を表示するには、上のチェックボックスをオンにしてください。
+                        """)
                 else:
-                    # AI分析を使用しない場合は簡易的な考察を表示
+                    # 基本分析モードの場合は簡易メッセージ
+                    st.info("👉 AI詳細分析を利用するには、「AI詳細分析（認証必要）」モードを選択してパスワード認証を行ってください。")
                     st.markdown(f"""
-                    ### 現在の時間帯データの意義
+                    ### 基本分析結果のまとめ
                     
-                    選択されている時間帯のデータは、あなたの直近の健康状態を把握するのに役立ちます。
-                    デフォルトでは、現在時刻の30分前から現在までのデータを分析します。
+                    {selected_date} {start_time_str}～{end_time_str}の時間帯で、以下の基本的な傾向が見られます：
                     
-                    この時間帯のデータを定期的に確認することで、日々の活動パターンや体調の変化をリアルタイムで把握できます。
-                    特に、運動後や食事後、睡眠前後などの特定のタイミングで確認すると、より意味のある洞察が得られます。
+                    - **平均心拍数**: {hr_avg if 'hr_avg' in locals() else '不明'} bpm
+                    - **心拍変動**: {'大きい' if 'hr_range' in locals() and hr_range > 20 else '中程度' if 'hr_range' in locals() and hr_range > 10 else '小さい' if 'hr_range' in locals() else '不明'}
+                    - **主な活動状態**: {'活動中/緊張' if 'hr_avg' in locals() and hr_avg > 90 else '通常活動' if 'hr_avg' in locals() and hr_avg > 70 else 'リラックス/睡眠' if 'hr_avg' in locals() else '不明'}
                     
-                    詳細なAI分析を表示するには、上のチェックボックスをオンにしてください。
+                    より詳細なAI分析と専門的なアドバイスを入手するには、認証モードに切り替えてください。
                     """)
 
 # フッター

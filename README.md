@@ -1,19 +1,39 @@
-# Fitbit Data Analyzer
+# Fitbit データ分析ダッシュボード
 
-FitbitのAPIを利用してユーザーのデータを取得・分析するためのPythonツールセットです。
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://streamlit.io)
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fitbit-data-analyzer.streamlit.app)
+Fitbitデータを可視化・分析するためのStreamlitアプリケーションです。
 
 ## 機能
 
-- Fitbit APIへの認証と認可
-- アクセストークンの取得と更新
-- 以下のデータ取得に対応:
-  - ユーザープロファイル情報
-  - アクティビティデータ（歩数、消費カロリーなど）
-  - 睡眠データ
-  - 心拍数データ
-- Streamlitによる直感的なデータ可視化
+- 歩数の推移グラフ（目標ライン付き）
+- 睡眠時間の推移グラフ（推奨睡眠時間ゾーン付き）
+- 安静時心拍数の推移グラフ
+- 睡眠時間と翌日の歩数の相関分析
+
+## 使用方法
+
+### ローカルでの実行
+
+```bash
+# 依存パッケージのインストール
+pip install -r requirements.txt
+
+# アプリの実行
+streamlit run app.py
+```
+
+### データの準備方法
+
+1. Fitbitアカウントから[パーソナルデータをダウンロード](https://www.fitbit.com/settings/data/export)
+2. ダウンロードしたZIPファイルをアプリにアップロード
+
+または、ローカルにJSONファイルがある場合は、それらのパスを指定して読み込むこともできます。
+
+## 注意事項
+
+- このアプリはユーザーがアップロードしたデータを一時的に処理するだけで、データをサーバー上に保存しません。
+- Fitbitデータの使用に関しては、[Fitbitの利用規約](https://www.fitbit.com/global/us/legal/terms-of-service)を確認してください。
 
 ## ディレクトリ構造
 
@@ -67,64 +87,6 @@ FITBIT_CLIENT_ID=あなたのクライアントID
 FITBIT_CLIENT_SECRET=あなたのクライアントシークレット
 ```
 
-## 使用方法
-
-### 1. コマンドラインを使用する場合
-
-新しい統合コマンドラインインターフェースを使用することで、簡単に各機能を実行できます。
-
-#### アクセストークンの取得
-
-初めてAPIを使用する場合は、認証コードからアクセストークンを取得する必要があります：
-
-```bash
-python3 main.py token --exchange
-```
-
-指示に従って認証プロセスを完了すると、アクセストークンとリフレッシュトークンが保存されます。
-
-#### アクセストークンの更新
-
-アクセストークンは約8時間で有効期限が切れます。更新するには：
-
-```bash
-python3 main.py token --refresh
-```
-
-#### データの取得
-
-```bash
-python3 main.py data [オプション]
-```
-
-オプション:
-- `--date`: データを取得する日付（例: 2023-01-01、デフォルト: today）
-- `--output-dir`: データを保存するディレクトリ（デフォルト: data）
-
-#### データの処理
-
-```bash
-python3 main.py process [オプション]
-```
-
-オプション:
-- `--input-dir`: 処理するデータのディレクトリ（デフォルト: data）
-- `--output-dir`: 処理結果の保存先ディレクトリ（デフォルト: output）
-
-### 2. Streamlitアプリを使用する場合
-
-Streamlitアプリケーションを使って、インタラクティブなダッシュボードでデータを可視化できます：
-
-```bash
-streamlit run app.py
-```
-
-ブラウザで自動的にアプリが開き、以下の機能が利用できます：
-- 歩数の推移グラフ（目標ライン付き）
-- 睡眠時間の推移グラフ（推奨睡眠時間ゾーン付き）
-- 安静時心拍数の推移グラフ
-- 睡眠時間と翌日の歩数の相関分析
-
 ## オンラインでの使用
 
 このアプリは[Streamlit Cloud](https://fitbit-data-analyzer.streamlit.app)からアクセスすることもできます。
@@ -151,11 +113,6 @@ docker-compose up -d
 3. OAuth 2.0のアプリケーションタイプを「Personal」に設定
 4. コールバックURLをアプリに設定（例: `http://localhost:8080/`）
 5. 取得したクライアントIDとシークレットを`.env`ファイルに設定
-
-## 注意事項
-
-- Fitbit APIは[レート制限](https://dev.fitbit.com/build/reference/web-api/developer-guide/application-design/#Rate-Limits)があります
-- 個人的な使用を目的としており、商用利用する場合は[Fitbitの利用規約](https://dev.fitbit.com/build/reference/web-api/developer-guide/terms-of-service/)を確認してください
 
 ## ライセンス
 
