@@ -6,7 +6,7 @@ Fitbitデータを可視化するStreamlitアプリ（リファクタリング�
 """
 
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, time
 import pandas as pd
 
 # リファクタリング後のモジュールをインポート
@@ -132,37 +132,64 @@ def show_time_analysis_tab(data_loader, visualizer):
     # 時間帯選択
     col1, col2 = st.columns(2)
     
-    # 現在時刻の取得
-    now = datetime.now()
-    thirty_mins_ago = now - pd.Timedelta(minutes=30)
+    # デフォルト値の設定（朝6時と夜9時）
+    default_start = time(6, 0)  # 06:00
+    default_end = time(21, 0)   # 21:00
     
     with col1:
-        start_time = st.time_input("開始時間", value=thirty_mins_ago.time())
+        start_time = st.time_input("開始時間", value=default_start)
     with col2:
-        end_time = st.time_input("終了時間", value=now.time())
+        end_time = st.time_input("終了時間", value=default_end)
+    
+    # 時間のバリデーション
+    time_error = False
+    if start_time >= end_time:
+        st.error("⚠️ 開始時間は終了時間より前にしてください")
+        time_error = True
     
     # 時間文字列に変換
     start_time_str = start_time.strftime("%H:%M")
     end_time_str = end_time.strftime("%H:%M")
     
-    if st.button("分析開始"):
+    # 時間の差を計算して表示
+    time_diff = (
+        datetime.combine(datetime.today(), end_time) - 
+        datetime.combine(datetime.today(), start_time)
+    )
+    hours, remainder = divmod(time_diff.seconds, 3600)
+    minutes, _ = divmod(remainder, 60)
+    
+    if not time_error:
+        st.info(f"📊 分析対象時間帯: {start_time_str}〜{end_time_str}（{hours}時間{minutes}分）")
+    
+    # 分析開始ボタン
+    analyze_button = st.button("分析開始")
+    
+    if analyze_button and not time_error:
         # APIアクセスを使用する場合は使用回数をカウント
         if access_option == "AI詳細分析（認証必要）":
             auth_manager.increment_usage()
         
         # 心拍数の詳細データ取得
-        intraday_hr_df = data_loader.load_intraday_heart_rate_data(
-            target_date=selected_date,
-            start_time=start_time_str,
-            end_time=end_time_str
-        )
+        with st.spinner("心拍数データを取得中..."):
+            intraday_hr_df = data_loader.load_intraday_heart_rate_data(
+                target_date=selected_date,
+                start_time=start_time_str,
+                end_time=end_time_str
+            )
         
         # 睡眠ステージデータ取得
-        sleep_stages_df = data_loader.load_sleep_stages_data(
-            target_date=selected_date,
-            start_time=start_time_str,
-            end_time=end_time_str
-        )
+        with st.spinner("睡眠データを取得中..."):
+            sleep_stages_df = data_loader.load_sleep_stages_data(
+                target_date=selected_date,
+                start_time=start_time_str,
+                end_time=end_time_str
+            )
+        
+        # データの有無を確認
+        if intraday_hr_df.empty and sleep_stages_df.empty:
+            st.warning(f"選択された時間帯 ({start_time_str}〜{end_time_str}) のデータが見つかりませんでした。別の時間帯を選択してください。")
+            return
         
         st.markdown(f"### {selected_date} {start_time_str}〜{end_time_str}の分析結果")
         
@@ -230,18 +257,19 @@ def show_time_analysis_tab(data_loader, visualizer):
                             * このAI分析はGPT-4.1-nanoによって生成されています
                             * 分析結果は参考情報であり、医療アドバイスではありません
                             * より正確な健康アドバイスには、医療専門家にご相談ください
-                            * 表示されている時間帯は現在時刻の30分前から現在までの活動です
-                            * 健康データをリアルタイムで分析するため、同じ時間帯でも時刻によって結果が変わります
+                            * 健康データを客観的に分析するために、日々の生活習慣も考慮してください
+                            * この分析は選択した時間帯のデータのみを対象としています
                             """)
                 else:
                     # AI分析を使用しない場合は簡易的な考察を表示
                     st.markdown(f"""
                     ### 現在の時間帯データの意義
                     
-                    選択されている時間帯のデータは、あなたの直近の健康状態を把握するのに役立ちます。
-                    デフォルトでは、現在時刻の30分前から現在までのデータを分析します。
+                    選択されている時間帯のデータは、あなたの健康状態を把握するのに役立ちます。
                     
-                    この時間帯のデータを定期的に確認することで、日々の活動パターンや体調の変化をリアルタイムで把握できます。
+                    この時間帯（{start_time_str}〜{end_time_str}）のデータを定期的に確認することで、
+                    日々の活動パターンや体調の変化を客観的に把握できます。
+                    
                     特に、運動後や食事後、睡眠前後などの特定のタイミングで確認すると、より意味のある洞察が得られます。
                     
                     詳細なAI分析を表示するには、上のチェックボックスをオンにしてください。
